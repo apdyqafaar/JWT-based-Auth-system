@@ -16,7 +16,7 @@ export const createTask=async(req, res, next)=>{
 
 export const getAllmyTasks=async(req, res, next)=>{
      try {
-         const tasks= await Tasks.find({createdBy:req.user._id})
+         const tasks= await Tasks.find()
 
          if(!tasks){
             return res.status(401).json("You didnt created task yet!")

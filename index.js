@@ -7,13 +7,20 @@ import dotenv from 'dotenv'
 import userRoutes from "./routes/userAuth.js";
 import uploadRoute from "./routes/upload.js";
 import tasksRouter from "./routes/tak.js";
+import helmet from "helmet";
+
+import { swaggerUi, swaggerSpec }  from'./utils/swagger.js';
+import { limit } from "./middlewares/rateLimit.js";
 
 dotenv.config()
 const app = express();
 const port=process.env.PORT || 3000
 
 app.use(express.json())
+app.use(helmet())
+app.use(limit)
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // routes
 app.use('/auth',userRoutes)
