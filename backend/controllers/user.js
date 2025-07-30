@@ -1,3 +1,4 @@
+import swaggerJSDoc from "swagger-jsdoc"
 import User from "../models/user.js"
 import { generateToken } from "../utils/generateToken.js"
 
@@ -27,12 +28,22 @@ import { generateToken } from "../utils/generateToken.js"
         const user=await User.findOne({email})
         
          if(!user || !(await user.comparedPassword(password))){
-            return res.status(401).json("invalid credintials")
+            return res.status(401).json("invalid credintials, Email or Password")
          }
 
          const token=generateToken(user._id)
-         res.status(201).json({token})
+         res.status(201).json({token, user})
 
+    } catch (error) {
+        next(error)
+    }
+  
+ }
+
+ export const getUsers=async(req, res, next)=>{
+    try {
+        const allUsers=await User.find()
+        res.status(201).json(allUsers)
     } catch (error) {
         next(error)
     }

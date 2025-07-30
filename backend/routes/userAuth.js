@@ -25,6 +25,12 @@ router.get('/admin', protectedRoute, authorize('admin'), (req, res)=>{
    res.status(200).json("welcome to your admin dashboard")
 })
 
+// checks if user is authenticated
+router.get("/me", protectedRoute, (req, res)=>{
+    res.status(201).json(req.user)
+})
+
+
 
 
 export default router;

@@ -8,9 +8,11 @@ import userRoutes from "./routes/userAuth.js";
 import uploadRoute from "./routes/upload.js";
 import tasksRouter from "./routes/tak.js";
 import helmet from "helmet";
+import cors from "cors"
 
 import { swaggerUi, swaggerSpec }  from'./utils/swagger.js';
 import { limit } from "./middlewares/rateLimit.js";
+import { getUsers } from "./controllers/user.js";
 
 dotenv.config()
 const app = express();
@@ -19,17 +21,18 @@ const port=process.env.PORT || 3000
 app.use(express.json())
 app.use(helmet())
 app.use(limit)
+app.use(cors(
+  {origin:["http://localhost:5173"]}
+))
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // routes
-app.use('/auth',userRoutes)
-app.use('/upload',uploadRoute)
-app.use('/tasks', tasksRouter)
+app.use('/api/auth',userRoutes)
+app.use('/api/upload',uploadRoute)
+app.use('/api/tasks', tasksRouter)
 
-app.get('/', (req, res)=>{
-  res.send('hey')
-})
+app.get('/users', getUsers)
 
 
 
