@@ -39,7 +39,7 @@ app.get('/users', getUsers)
 
 
 
-if(process.env.NODE==='production'){
+if(process.env.NODE_DEV==='production'){
 
   const __direname=path.dirname(fileURLToPath(import.meta.url));
 
@@ -52,7 +52,7 @@ if(process.env.NODE==='production'){
 
 app.use(notFound)
 app.use(erroreHandler)
-mongoose.connect(process.env.NODE==="local"?process.env.MONGDB_URI:process.env.MONGDB_URI_PRO)
+mongoose.connect(process.env.NODE_DEV=="local"?process.env.MONGDB_URI:process.env.MONGDB_URI_PRO)
 .then(()=> console.log('your mong db was connected'))
 .catch((e)=> console.error(e))
 
