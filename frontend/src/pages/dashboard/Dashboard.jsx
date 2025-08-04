@@ -1,5 +1,5 @@
 import Api_url from '@/components/api/apiClient'
-import { DashboardWellcome } from '@/components/dashboard/dashboardWellcome'
+import { DashboardWelcome } from '@/components/dashboard/DashboardWelcome'
 import { HeaderComponent } from '@/components/dashboard/HeaderComponent'
 import { TaskForm } from '@/components/tasks/taskForm'
 import { TaskList } from '@/components/tasks/TaskList'
@@ -63,7 +63,7 @@ if(tasksQuery.isLoading){
       <main>
 
         {/* welcom section */}
-         <DashboardWellcome 
+         <DashboardWelcome 
           showCreateForm={showCreateForm}
           onCreateTask={handleCreateTask}
          />

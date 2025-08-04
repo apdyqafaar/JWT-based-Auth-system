@@ -4,7 +4,7 @@ import { Button } from '../ui/button'
 import { Plus } from 'lucide-react'
 import { CardStatus } from './CardStatus'
 
-export const DashboardWellcome = ({showCreateForm, onCreateTask}) => {
+export const DashboardWelcome = ({showCreateForm, onCreateTask}) => {
     
   const hanldeCreateTaskButton=()=>{
     onCreateTask()
