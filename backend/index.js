@@ -14,6 +14,9 @@ import { swaggerUi, swaggerSpec }  from'./utils/swagger.js';
 import { limit } from "./middlewares/rateLimit.js";
 import { getUsers } from "./controllers/user.js";
 
+import path from "path"
+import { fileURLToPath } from "url";
+
 dotenv.config()
 const app = express();
 const port=process.env.PORT || 3000
@@ -36,10 +39,20 @@ app.get('/users', getUsers)
 
 
 
+if(process.env.NODE==='production'){
+
+  const __direname=path.dirname(fileURLToPath(import.meta.url));
+
+  app.use(express.static(path.join(__direname, "../frontend/dist")));
+  
+  app.get(/.*/, (req, res)=>{
+    res.send(path.join(__direname, "..", "frontend", "dist", "index.html"))
+  })
+}
 
 app.use(notFound)
 app.use(erroreHandler)
-mongoose.connect(process.env.MONGDB_URI)
+mongoose.connect(process.env.NODE==="local"?process.env.MONGDB_URI:process.env.MONGDB_URI_PRO)
 .then(()=> console.log('your mong db was connected'))
 .catch((e)=> console.error(e))
 
