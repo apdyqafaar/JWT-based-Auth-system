@@ -1,7 +1,7 @@
 import UseAuthStore from "@/lib/store/authStore"
 import  axios from "axios"
 
-const url="http://localhost:3000/api"
+const url="https://jwt-based-auth-system.onrender.com"
 const Api_url=axios.create({
     baseURL:url,
     headers:{
