@@ -39,20 +39,20 @@ app.get('/users', getUsers)
 
 
 
-if(process.env.NODE_DEV==='production'){
+if(process.env.NODE_ENV==='production'){
 
   const __direname=path.dirname(fileURLToPath(import.meta.url));
 
   app.use(express.static(path.join(__direname, "../frontend/dist")));
   
-  app.get(/.*/, (req, res)=>{
-    res.send(path.join(__direname, "..", "frontend", "dist", "index.html"))
+  app.get("*", (req, res)=>{
+    res.sendFile(path.join(__direname, "..", "frontend", "dist", "index.html"))
   })
 }
 
 app.use(notFound)
 app.use(erroreHandler)
-mongoose.connect(process.env.NODE_DEV=="local"?process.env.MONGDB_URI:process.env.MONGDB_URI_PRO)
+mongoose.connect(process.env.NODE_ENV=="local"?process.env.MONGDB_URI:process.env.MONGDB_URI_PRO)
 .then(()=> console.log('your mong db was connected'))
 .catch((e)=> console.error(e))
 
