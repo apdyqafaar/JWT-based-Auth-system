@@ -25,20 +25,20 @@ import { Loader } from "lucide-react";
 import { ExtructErrorMessages } from "@/utils/errorUtil";
 import { toast } from "sonner";
 
-const Task_Status=[
-  {value:"pending", label:'pending'},
-  {value:"in progress", label:'in progress'},
-  {value:"completed", label:'completed'}
-]
+const Task_Status = [
+  { value: "pending", label: "pending" },
+  { value: "in progress", label: "in progress" },
+  { value: "completed", label: "completed" },
+];
 
-export const TaskForm = ({ onOpenChange, open = true , task}) => {
+export const TaskForm = ({ onOpenChange, open = true, task }) => {
   const titleId = useId();
   const descriptionId = useId();
   const status = useId();
 
-  const queryclient=useQueryClient()
+  const queryclient = useQueryClient();
 
-  const {token}=UseAuthStore()
+  const { token } = UseAuthStore();
 
   const [formValues, setFormValues] = useState({
     title: "",
@@ -46,28 +46,29 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
     status: "pending",
     DueDate: "",
   });
- const[validationErr, setValidationErr]=useState(null)
+  const [validationErr, setValidationErr] = useState(null);
 
-    useEffect(()=>{
-     if(task){
+  useEffect(() => {
+    if (task) {
       setFormValues({
-        title:task.title,
-        description:task.description,
-        status:task.status || "pending",
-        DueDate:task.DueDate?  new Date(task.DueDate).toISOString().split("T")[0] : ''
+        title: task.title,
+        description: task.description,
+        status: task.status || "pending",
+        DueDate: task.DueDate
+          ? new Date(task.DueDate).toISOString().split("T")[0]
+          : "",
       });
-     }else{
+    } else {
       setFormValues({
-          title: "",
-          description: "",
-          status: "pending",
-          DueDate: "",
-      })
-     }
+        title: "",
+        description: "",
+        status: "pending",
+        DueDate: "",
+      });
+    }
 
-     setValidationErr(null)
-  } ,[task ,open])
-
+    setValidationErr(null);
+  }, [task, open]);
 
   const handleChaneInput = (e) => {
     const { value, name } = e.target;
@@ -75,77 +76,68 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleStatusChange=(value)=>{
-
+  const handleStatusChange = (value) => {
     setFormValues({
       ...formValues,
-      status:value
-    })
-  }
+      status: value,
+    });
+  };
 
-
-  const handleCnacel=()=>{
-    onOpenChange?.(false)
-  }
-
-
-
-
+  const handleCnacel = () => {
+    onOpenChange?.(false);
+  };
 
   // actual cerate mutationFunction
 
-  const createMutation=useMutation({
-    mutationFn: async(taskData)=>{
-      const response=await Api_url.post("/tasks",taskData );
-      return response
+  const createMutation = useMutation({
+    mutationFn: async (taskData) => {
+      const response = await Api_url.post("/tasks", taskData);
+      return response;
     },
-    onSuccess: ()=>{
-      queryclient.invalidateQueries(['tasks'])
-          onOpenChange?.(false)
-      }
-  })
-
-    const updatteMutation=useMutation({
-    mutationFn: async(taskData)=>{
-      const response=await Api_url.put(`/tasks/${task._id}`,taskData );
-      return response
+    onSuccess: () => {
+      queryclient.invalidateQueries(["tasks"]);
+      onOpenChange?.(false);
     },
-    onSuccess: ()=>{
-      toast.success("Task was updated successfully")
-      queryclient.invalidateQueries(['tasks'])
-          onOpenChange?.(false)
-      }
-  })
+  });
 
+  const updatteMutation = useMutation({
+    mutationFn: async (taskData) => {
+      const response = await Api_url.put(`/tasks/${task._id}`, taskData);
+      return response;
+    },
+    onSuccess: () => {
+      toast.success("Task was updated successfully");
+      queryclient.invalidateQueries(["tasks"]);
+      onOpenChange?.(false);
+    },
+  });
 
   // hndle Form submit
-  const handleFormSubmit=(e)=>{
-     e.preventDefault()
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
 
-     if(!formValues.title || formValues.title.length <3) setValidationErr("Title is required") 
+    if (!formValues.title || formValues.title.length < 3)
+      setValidationErr("Title is required");
 
-      if(task){
-     updatteMutation.mutate({
-      title:formValues.title,
-      description:formValues.description || "",
-      status:formValues.status,
-      DueDate:formValues.DueDate || ""
-     })
-      }else{
-          createMutation.mutate({
-      title:formValues.title,
-      description:formValues.description || "",
-      status:formValues.status,
-      DueDate:formValues.DueDate || ""
-     })
-      }
+    if (task) {
+      updatteMutation.mutate({
+        title: formValues.title,
+        description: formValues.description || "",
+        status: formValues.status,
+        DueDate: formValues.DueDate || "",
+      });
+    } else {
+      createMutation.mutate({
+        title: formValues.title,
+        description: formValues.description || "",
+        status: formValues.status,
+        DueDate: formValues.DueDate || "",
+      });
+    }
+  };
 
-   
-  }
-
-
-  const displayErr=validationErr || ExtructErrorMessages(createMutation.error) 
-
+  const displayErr =
+    validationErr || ExtructErrorMessages(createMutation.error);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -158,18 +150,16 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
             Fill in the details below to create a new task.
           </DialogDescription>
         </DialogHeader>
-        {
-          displayErr && (
-            <div className="bg-destructive/10 text-destructive text-sm rounded-sm p-2">
-              {displayErr}
-            </div>
-          )
-        }
+        {displayErr && (
+          <div className="bg-destructive/10 text-destructive text-sm rounded-sm p-2">
+            {displayErr}
+          </div>
+        )}
 
         <form className="mt-2 py-2 space-y-3" onSubmit={handleFormSubmit}>
           {/* title */}
           <div className="space-y-1">
-            <Label htmlFor={titleId} className={"text-sm"} >
+            <Label htmlFor={titleId} className={"text-sm"}>
               Title *
             </Label>
             <Input
@@ -184,9 +174,11 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
 
           {/* description */}
           <div className="space-y-1">
-            <Label className={"text-sm"}  htmlFor={descriptionId}>Description *</Label>
+            <Label className={"text-sm"} htmlFor={descriptionId}>
+              Description *
+            </Label>
             <Textarea
-            id={descriptionId}
+              id={descriptionId}
               name="description"
               value={formValues.description}
               onChange={handleChaneInput}
@@ -196,26 +188,31 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
           </div>
           {/* sataus */}
           <div className="space-y-1">
-            <Select value={formValues.status} onValueChange={handleStatusChange} >
+            <Select
+              value={formValues.status}
+              onValueChange={handleStatusChange}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
-                {
-                  Task_Status.length>0 &&Task_Status.map(t=>(
-                      <SelectItem value={t.value} key={t.value}>{t.label}</SelectItem>
-                  ))
-                }
+                {Task_Status.length > 0 &&
+                  Task_Status.map((t) => (
+                    <SelectItem value={t.value} key={t.value}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
-  
 
-              {/* description */}
+          {/* description */}
           <div className="space-y-1">
-            <Label className={"text-sm"}  htmlFor={"dudate"}>DueDate *</Label>
+            <Label className={"text-sm"} htmlFor={"dudate"}>
+              DueDate *
+            </Label>
             <Input
-            id={"dudate"}
+              id={"dudate"}
               type={"date"}
               name="DueDate"
               value={formValues.DueDate}
@@ -225,10 +222,27 @@ export const TaskForm = ({ onOpenChange, open = true , task}) => {
           </div>
 
           <DialogFooter>
-           <div className="flex items-center justify-end space-x-2 mt-4 mb-2">
-              <Button variant={"outline"} className={"cursor-pointer"} onClick={handleCnacel}>Cancel</Button>
-              <Button type="submit" className={"cursor-pointer"}>{createMutation.isPending || updatteMutation.isPending ? `${<Loader className="animate-spin"/>} ${task? "Updating..." :" Creating task..."}`:task?"Update task":"Create task"}</Button>
-           </div>
+            <div className="flex items-center justify-end space-x-2 mt-4 mb-2">
+              <Button
+                variant={"outline"}
+                className={"cursor-pointer"}
+                onClick={handleCnacel}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="cursor-pointer">
+                {createMutation.isPending || updatteMutation.isPending ? (
+                  <>
+                    <Loader className="animate-spin mr-2" />
+                    {task ? "Updating..." : "Creating task..."}
+                  </>
+                ) : task ? (
+                  "Update task"
+                ) : (
+                  "Create task"
+                )}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
